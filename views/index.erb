@@ -1,0 +1,7 @@
+<h1>Contact List</h1>
+<a href="/person/add">Add person</a>
+<ul>
+  <% @persons.each do |person| %>
+    <li><a href= "person/<%= person[:person_id] %>"><%= person[:name] %></a></li>
+  <% end %>
+</ul>

@@ -1,0 +1,29 @@
+<h3>Add a new street address</h3>
+
+<form action="/street_address/add/<%=params[:person_id] %>" method = "post">
+
+  <label for="street">Street address:</label>
+  <input type="text" name="street"/>
+
+  <label for="city">City:</label>
+  <input type="text" name="city"/>
+
+  <label for="state">Two-letter state code:</label>
+  <input type="text" name="state"/>
+
+  <label for="postal">Five-digit postal code:</label>
+  <input type="text" name="postal"/>
+
+  <label for="type">Type:</label>
+  <select name="type">
+    <option value="home">Home</option>
+    <option value="work">Work</option>
+  </select>
+
+  <button type="submit">Submit</button>
+
+</form>
+
+<form action="/person/<%=params[:person_id] %>" method="get">
+  <button type="submit">Cancel</button>
+</form>

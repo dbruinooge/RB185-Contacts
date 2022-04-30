@@ -1,0 +1,24 @@
+<h3>Add a new phone number</h3>
+
+<form action="/phone_number/add/<%=params[:person_id] %>" method = "post">
+
+  <label for="area_code">Three-digit area code:</label>
+  <input type="text" name="area_code"/>
+
+  <label for="number">Seven-digit phone number:</label>
+  <input type="text" name="number"/>
+
+  <label for="type">Type:</label>
+  <select name="type">
+    <option value="home">Home</option>
+    <option value="work">Work</option>
+    <option value="mobile">Mobile</option>
+  </select>
+
+  <button type="submit">Submit</button>
+
+</form>
+
+<form action="/person/<%=params[:person_id] %>" method="get">
+  <button type="submit">Cancel</button>
+</form>

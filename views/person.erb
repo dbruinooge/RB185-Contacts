@@ -1,0 +1,48 @@
+<h1><%= @person[:name] %></h1>
+
+<form action="/person/delete/<%= @person[:person_id] %>" method = "post">
+  <button type = "submit">Delete person</button>
+</form>
+
+<h2>Phone Numbers</h2>
+<a href="/phone_number/add/<%= @person[:person_id] %>">Add phone number</a>
+<ul>
+  <% @phone_numbers.each do |num| %>
+    <li>
+      <%= display_phone_number(num) %>
+      <form action="/person/<%= @person[:person_id] %>/phone_number/<%= num[:phone_id] %>" method = "post">
+        <button type = "submit">Delete</button>
+      </form>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Street Addresses</h2>
+<a href="/street_address/add/<%= @person[:person_id] %>">Add street address</a>
+<ul>
+  <% @street_addresses.each do |address| %>
+    <li>
+      <%= display_street_address(address) %>
+      <form action="/person/<%= @person[:person_id] %>/street_address/<%= address[:street_id] %>" method = "post">
+        <button type = "submit">Delete</button>
+      </form>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Email Addresses</h2>
+<a href="/email_address/add/<%= @person[:person_id] %>">Add email address</a>
+<ul>
+  <% @email_addresses.each do |email| %>
+    <li>
+      <%= display_email_address(email) %>
+      <form action="/person/<%= @person[:person_id] %>/email_address/<%= email[:email_id] %>" method = "post">
+        <button type = "submit">Delete</button>
+      </form>
+    </li>
+  <% end %>
+</ul>
+
+<% content_for :page_footer do %>
+    <a href="/index">All Contacts</a>
+<% end %>
