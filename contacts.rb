@@ -19,23 +19,36 @@ before do
   @storage = DatabasePersistence.new
 end
 
-def valid_phone_number?(area_code, number)
-  area_code.digits.length == 3 && area_code !~ /\D/ &&
-  number.digits.length == 7 && number !~ /\D/
+def error_for_phone_number(area_code, number)
+  if area_code.digits.length != 3
+    "Area code must be 3 digits."
+  elsif number.digits.length != 7
+    "Phone number must be 7 digits."
+  end
 end
 
-def valid_street_address?(street, city, state, postal)
-  street.length <= 100 && city.length <= 50 &&
-  state.length == 2 && postal.length == 5 &&
-  state !~ /[^a-zA-Z]/ && postal !~ /\D/
+def error_for_street_address(street, city, state, postal)
+  if street.length > 100
+    "Street address must be no more than 100 characters."
+  elsif city.length > 50
+    "City name must be no more than 50 characters."
+  elsif state.length != 2 || state =~ /[^a-zA-Z]/
+    "State code must be 2 letters."
+  elsif postal.length != 5 || postal =~ /\D/
+    "Postal code must be 5 digits."
+  end
 end
 
-def valid_email_address?(email_address)
-  email_address =~ URI::MailTo::EMAIL_REGEXP
+def error_for_email_address(email_address)
+  if email_address !~ URI::MailTo::EMAIL_REGEXP
+    "Invalid format for email address."
+  end
 end
 
-def valid_person_name?(name)
-  true
+def error_for_person_name(name)
+  if name.length > 100
+    "Person's name must be no more than 100 characters."
+  end
 end
 
 helpers do
@@ -98,11 +111,14 @@ end
 # Add person
 post "/person/add" do
   name = params[:name]
-  if valid_person_name?(name)
-    @storage.add_person(name)
-    redirect "/index"
-  else
+  error = error_for_person_name(name)
+  if error
+    session[:error] = error
     erb :add_person
+  else
+    @storage.add_person(name)
+    session[:success] = "The person has been added."
+    redirect "/index"
   end
 end
 
@@ -112,11 +128,14 @@ post "/phone_number/add/:person_id" do
   area_code = params[:area_code].to_i
   number = params[:number].to_i
   type = params[:type]
-  if valid_phone_number?(area_code, number)
-    @storage.add_phone_number(area_code, number, type, person_id)
-    redirect "/person/#{person_id}"
-  else
+  error = error_for_phone_number(area_code, number)
+  if error
+    session[:error] = error
     erb :add_phone_number
+  else
+    @storage.add_phone_number(area_code, number, type, person_id)
+    session[:success] = "The phone number has been added."
+    redirect "/person/#{person_id}"
   end
 end
 
@@ -128,11 +147,14 @@ post "/street_address/add/:person_id" do
   state = params[:state]
   postal = params[:postal]
   type = params[:type]
-  if valid_street_address?(street, city, state, postal)
-    @storage.add_street_address(street, city, state, postal, type, person_id)
-    redirect "/person/#{person_id}"
-  else
+  error = error_for_street_address(street, city, state, postal)
+  if error
+    session[:error] = error
     erb :add_street_address
+  else
+    @storage.add_street_address(street, city, state, postal, type, person_id)
+    session[:success] = "The street address has been added."
+    redirect "/person/#{person_id}"
   end
 end
 
@@ -141,35 +163,42 @@ post "/email_address/add/:person_id" do
   person_id = params[:person_id].to_i
   email = params[:email]
   type = params[:type]
-  if valid_email_address?(email)
-    @storage.add_email_address(email, type, person_id)
-    redirect "/person/#{person_id}"
-  else
+  error = error_for_email_address(email)
+  if error
+    session[:error] = error
     erb :add_email_address
+  else
+    @storage.add_email_address(email, type, person_id)
+    session[:success] = "The email address has been added."
+    redirect "/person/#{person_id}"
   end
 end
 
 # Delete person
 post "/person/delete/:person_id" do
   @storage.delete_person(params[:person_id])
+  session[:success] = "The person has been deleted."
   redirect "/index"
 end
 
 # Delete phone number
 post "/person/:person_id/phone_number/:phone_id" do
   @storage.delete_phone_number(params[:phone_id])
+  session[:success] = "The phone number has been deleted."
   redirect "/person/#{params[:person_id]}"
 end
 
 # Delete street address
 post "/person/:person_id/street_address/:street_id" do
   @storage.delete_street_address(params[:street_id])
+  session[:success] = "The street address has been deleted."
   redirect "/person/#{params[:person_id]}"
 end
 
 # Delete email address
 post "/person/:person_id/email_address/:email_id" do
   @storage.delete_email_address(params[:email_id])
+  session[:success] = "The email address has been deleted."
   redirect "/person/#{params[:person_id]}"
 end
 

@@ -7,6 +7,15 @@
 </head>
 
 <body>
+  <% if session[:error] %>
+    <p><%= session.delete(:error) %></p>
+  <% end %>
+
+
+  <% if session[:success] %>
+    <p><%= session.delete(:success) %></p>
+  <% end %>
+
   <main>
     <%== yield %>
   </main>
